@@ -1,0 +1,10 @@
+Method,MAE,RMSE,MaxErr
+LSTM (no SOC0),4.183,6.119,29.931
+"Coulomb, true SOC0",0.111,0.139,0.4
+"Coulomb, SOC0 -2 %",2.109,2.111,2.4
+"Coulomb, SOC0 -10 %",10.109,10.109,10.4
+"EKF (measured OCV), true SOC0",10.378,12.774,33.703
+"EKF (measured OCV), SOC0 -10 %",10.378,12.774,33.703
+Constant (mean training SOC),24.646,28.499,49.857
+"EKF-1RC (measured OCV), true SOC0",0.956,1.355,4.25
+"EKF-1RC (measured OCV), SOC0 -10 %",0.957,1.356,4.251

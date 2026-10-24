@@ -1,0 +1,5 @@
+Variant,Size_KB,Latency_median_ms,Latency_p95_ms,MAE_synthetic_test_pct,MAE_real_zero_shot_pct,Max_abs_diff_vs_Keras_pct
+Keras (eager),385.7,124.501,156.744,0.203,7.369,0.0
+Keras (tf.function graph),385.7,3.052,3.907,0.203,7.369,0.0
+TFLite float32 (1 thread),145.5,0.414,0.492,0.203,7.369,0.0
+TFLite dynamic_int8 (1 thread),67.6,0.405,0.499,0.199,7.391,0.124

@@ -1,0 +1,9 @@
+Route,SOC_points_misclassified_by_naive,SOC_points_naive_SAFE_but_AMSA_not,SOC_points_naive_reachable_but_actually_impossible
+New Delhi → Noida,3,2,1
+Noida → New Delhi,2,1,1
+Dehradun → Mussoorie,42,32,26
+Mussoorie → Dehradun,16,0,0
+Shimla → Kufri,16,12,10
+Kufri → Shimla,2,1,1
+Siliguri → Darjeeling,21,3,21
+Darjeeling → Siliguri,22,0,0

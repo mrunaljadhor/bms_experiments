@@ -1,0 +1,7 @@
+Held_out_client,Zero_shot,Local_only_mean,Local_only_best,Centralized,FedAvg
+S1 Single-ECO,5.058,1.941,0.676,0.667,0.951
+S2 Single-SPORT,10.568,1.816,1.003,1.626,1.153
+S3 Series-ECO,5.531,1.676,0.634,0.599,0.51
+S4 Series-SPORT,8.01,2.455,1.801,1.317,1.795
+S5 Parallel-ECO,4.68,1.402,0.744,0.617,0.624
+S6 Parallel-SPORT,10.101,4.238,2.684,3.341,4.896

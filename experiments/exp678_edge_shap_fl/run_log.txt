@@ -1,0 +1,106 @@
+﻿sanity synthetic MAE (expect 0.2034): 0.20342115312814713
+python.exe : WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+At line:1 char:396
++ ... NG="utf-8"; & "C:/Users/asus/AppData/Local/Programs/Python/Python313/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (WARNING: All lo...itten to STDERR:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+I0000 00:00:1792131927.455421   21372 devices.cc:76] Number of eligible GPUs (core count >= 8, compute capability >= 
+0.0): 0 (Note: TensorFlow was not compiled with CUDA or ROCm support)
+I0000 00:00:1792131927.455696   21372 single_machine.cc:376] Starting new session
+W0000 00:00:1792131927.533702   21372 tf_tfl_flatbuffer_helpers.cc:364] Ignored output_format.
+W0000 00:00:1792131927.533756   21372 tf_tfl_flatbuffer_helpers.cc:367] Ignored drop_control_dependency.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+I0000 00:00:1792131932.516891   21372 devices.cc:76] Number of eligible GPUs (core count >= 8, compute capability >= 
+0.0): 0 (Note: TensorFlow was not compiled with CUDA or ROCm support)
+I0000 00:00:1792131932.517032   21372 single_machine.cc:376] Starting new session
+W0000 00:00:1792131932.578190   21372 tf_tfl_flatbuffer_helpers.cc:364] Ignored output_format.
+W0000 00:00:1792131932.578248   21372 tf_tfl_flatbuffer_helpers.cc:367] Ignored drop_control_dependency.
+                          Variant  Size_KB  Latency_median_ms  Latency_p95_ms  MAE_synthetic_test_pct  MAE_real_zero_shot_pct  Max_abs_diff_vs_Keras_pct
+0                   Keras (eager)    385.7            124.501         156.744                   0.203                   7.369                      0.000
+1       Keras (tf.function graph)    385.7              3.052           3.907                   0.203                   7.369                      0.000
+2       TFLite float32 (1 thread)    145.5              0.414           0.492                   0.203                   7.369                      0.000
+3  TFLite dynamic_int8 (1 thread)     67.6              0.405           0.499                   0.199                   7.391                      0.124 {'full_int8': 'conversion not supported for this LSTM (converter process exit code 3221225477)'}
+{
+  "method": "shap.GradientExplainer (expected gradients), shap 0.52.0",
+  "background": 200,
+  "explained_synthetic": 300,
+  "explained_real": 200,
+  "base_value_soc_pct": 29.36,
+  "completeness_mean_abs_err_pp": 2.254,
+  "summary": {
+    "synthetic": {
+      "mean_abs_shap_pp": {
+        "Voltage": 17.692,
+        "Current": 0.562,
+        "Temperature": 0.164
+      },
+      "share_pct": {
+        "Voltage": 96.1,
+        "Current": 3.1,
+        "Temperature": 0.9
+      },
+      "share_of_last_10_steps_pct": 64.6
+    },
+    "real": {
+      "mean_abs_shap_pp": {
+        "Voltage": 61.492,
+        "Current": 1.971,
+        "Temperature": 2.801
+      },
+      "share_pct": {
+        "Voltage": 92.8,
+        "Current": 3.0,
+        "Temperature": 4.2
+      },
+      "share_of_last_10_steps_pct": 71.1
+    }
+  }
+}
+WARNING:tensorflow:5 out of the last 17 calls to <function 
+TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x00000205638B2480> triggered 
+tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating 
+@tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of 
+tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True 
+option that can avoid unnecessary retracing. For (3), please refer to 
+https://www.tensorflow.org/guide/function#controlling_retracing and 
+https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+WARNING:tensorflow:5 out of the last 17 calls to <function 
+TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x00000205638B2480> triggered 
+tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating 
+@tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of 
+tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True 
+option that can avoid unnecessary retracing. For (3), please refer to 
+https://www.tensorflow.org/guide/function#controlling_retracing and 
+https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+WARNING:tensorflow:5 out of the last 17 calls to <function 
+TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x0000020564EE9120> triggered 
+tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating 
+@tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of 
+tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True 
+option that can avoid unnecessary retracing. For (3), please refer to 
+https://www.tensorflow.org/guide/function#controlling_retracing and 
+https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+WARNING:tensorflow:5 out of the last 17 calls to <function 
+TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x0000020564EE9120> triggered 
+tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating 
+@tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of 
+tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True 
+option that can avoid unnecessary retracing. For (3), please refer to 
+https://www.tensorflow.org/guide/function#controlling_retracing and 
+https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+{'Held_out_client': 'S1 Single-ECO', 'Zero_shot': 5.058, 'Local_only_mean': 1.941, 'Local_only_best': 0.676, 'Centralized': 0.667, 'FedAvg': 0.951}
+{'Held_out_client': 'S2 Single-SPORT', 'Zero_shot': 10.568, 'Local_only_mean': 1.816, 'Local_only_best': 1.003, 'Centralized': 1.626, 'FedAvg': 1.153}
+{'Held_out_client': 'S3 Series-ECO', 'Zero_shot': 5.531, 'Local_only_mean': 1.676, 'Local_only_best': 0.634, 'Centralized': 0.599, 'FedAvg': 0.51}
+{'Held_out_client': 'S4 Series-SPORT', 'Zero_shot': 8.01, 'Local_only_mean': 2.455, 'Local_only_best': 1.801, 'Centralized': 1.317, 'FedAvg': 1.795}
+{'Held_out_client': 'S5 Parallel-ECO', 'Zero_shot': 4.68, 'Local_only_mean': 1.402, 'Local_only_best': 0.744, 'Centralized': 0.617, 'FedAvg': 0.624}
+{'Held_out_client': 'S6 Parallel-SPORT', 'Zero_shot': 10.101, 'Local_only_mean': 4.238, 'Local_only_best': 2.684, 'Centralized': 3.341, 'FedAvg': 4.896}
+     Held_out_client  Zero_shot  Local_only_mean  Local_only_best  Centralized  FedAvg
+0      S1 Single-ECO      5.058            1.941            0.676        0.667   0.951
+1    S2 Single-SPORT     10.568            1.816            1.003        1.626   1.153
+2      S3 Series-ECO      5.531            1.676            0.634        0.599   0.510
+3    S4 Series-SPORT      8.010            2.455            1.801        1.317   1.795
+4    S5 Parallel-ECO      4.680            1.402            0.744        0.617   0.624
+5  S6 Parallel-SPORT     10.101            4.238            2.684        3.341   4.896
+{'Zero_shot': 7.369, 'Local_only_mean': 2.267, 'Local_only_best': 1.262, 'Centralized': 1.378, 'FedAvg': 1.674}

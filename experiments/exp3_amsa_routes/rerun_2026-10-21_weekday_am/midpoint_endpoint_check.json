@@ -1,0 +1,20 @@
+[
+  {
+    "Route": "New Delhi \u2192 Noida",
+    "SOC": 39.4,
+    "Endpoint_status": "CRITICAL",
+    "Endpoint_action": "FORCE_ECO_MODE"
+  },
+  {
+    "Route": "Dehradun \u2192 Mussoorie",
+    "SOC": 78.3,
+    "Endpoint_status": "CRITICAL",
+    "Endpoint_action": "FORCE_ECO_MODE"
+  },
+  {
+    "Route": "Shimla \u2192 Kufri",
+    "SOC": 30.4,
+    "Endpoint_status": "CRITICAL",
+    "Endpoint_action": "FORCE_ECO_MODE"
+  }
+]

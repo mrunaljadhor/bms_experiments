@@ -1,0 +1,61 @@
+{
+  "synthetic_test": {
+    "MAE": 0.2034212052822113,
+    "RMSE": 0.33679278858584255,
+    "MaxErr": 2.7333984375,
+    "R2": 0.9997231364250183,
+    "N": 8290
+  },
+  "train_windows": 33022,
+  "val_windows": 7369,
+  "test_windows": 8290,
+  "scenarios": {
+    "train": 70,
+    "val": 15,
+    "test": 15
+  },
+  "epochs_run": 35,
+  "train_time_s": 582.4,
+  "params": 29857,
+  "latency_ms_single_window_median": 134.6,
+  "model_size_kb": 385.7,
+  "real_sessions_summary": [
+    {
+      "Method": "LSTM zero-shot (synthetic-trained)",
+      "MAE": 7.369,
+      "RMSE": 8.692,
+      "MaxErr": 27.143
+    },
+    {
+      "Method": "LSTM fine-tuned (LOSO)",
+      "MAE": 1.243,
+      "RMSE": 1.871,
+      "MaxErr": 8.331
+    },
+    {
+      "Method": "Coulomb counting (true SOC0)",
+      "MAE": 0.073,
+      "RMSE": 0.093,
+      "MaxErr": 0.281
+    },
+    {
+      "Method": "Coulomb counting (SOC0 +2%)",
+      "MAE": 2.057,
+      "RMSE": 2.059,
+      "MaxErr": 2.281
+    },
+    {
+      "Method": "EKF (true SOC0)",
+      "MAE": 2.421,
+      "RMSE": 2.812,
+      "MaxErr": 6.533
+    },
+    {
+      "Method": "EKF (SOC0 +2%)",
+      "MAE": 2.422,
+      "RMSE": 2.813,
+      "MaxErr": 6.533
+    }
+  ],
+  "total_runtime_s": 635.7
+}

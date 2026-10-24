@@ -1,0 +1,39 @@
+{
+ "T_MC": 30,
+ "alpha": 0.05,
+ "test_25C": {
+  "MAE_mc": 3.242,
+  "mean_sigma": 3.801,
+  "cov95_gauss": 0.835,
+  "width95_gauss": 14.9,
+  "cov95_conformal": 0.966,
+  "width95_conformal": 35.486,
+  "lower_margin_mean": 7.819,
+  "lower_margin_median": 6.612,
+  "lower_margin_p95": 17.987,
+  "lower_violation": 0.021
+ },
+ "test_all_temps": {
+  "MAE_mc": 3.237,
+  "mean_sigma": 3.874,
+  "cov95_gauss": 0.835,
+  "width95_gauss": 15.186,
+  "cov95_conformal": 0.972,
+  "width95_conformal": 36.169,
+  "lower_margin_mean": 7.964,
+  "lower_margin_median": 6.816,
+  "lower_margin_p95": 18.043,
+  "lower_violation": 0.043
+ },
+ "amsa_mean_over_8_routes_25C": {
+  "95 % lower bound": {
+   "unsafe_accept_pct": 0.007,
+   "false_refusal_pct": 8.151
+  },
+  "point estimate": {
+   "unsafe_accept_pct": 0.712,
+   "false_refusal_pct": 1.594
+  }
+ },
+ "runtime_s": 2988.4
+}

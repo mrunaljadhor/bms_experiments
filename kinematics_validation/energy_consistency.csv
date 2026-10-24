@@ -1,0 +1,7 @@
+Model,Session,Config,Mode,Duration_s,Mean_speed_kmh,Distance_km,Mean_power_W,Energy_from_power_Wh,SOC_drop_pct,Energy_from_SOC_Wh,Wh_per_km_power,Wh_per_km_SOC
+Corrected,1,Single,ECO,280,22.43,1.745,67.9,5.28,0.4,15.24,3.03,8.74
+Corrected,2,Single,SPORT,286,30.67,2.437,129.4,10.28,0.4,15.24,4.22,6.25
+Corrected,3,Series,ECO,281,18.87,1.473,51.1,3.99,0.3,11.43,2.71,7.76
+Corrected,4,Series,SPORT,268,21.9,1.63,82.3,6.13,0.3,11.43,3.76,7.01
+Corrected,5,Parallel,ECO,267,17.92,1.329,53.0,3.93,0.2,7.62,2.96,5.73
+Corrected,6,Parallel,SPORT,286,21.55,1.712,66.2,5.26,0.3,11.43,3.07,6.68

@@ -1,0 +1,75 @@
+=== CHAPTER 3 SYSTEM DEVELOPMENT & METHODOLOGY
+## 3.1 System Block Diagram / Architecture
+H3: 3.1.1 Layered architecture
+iBMS has five layers (Fig. 3.1). The first layer, the data layer, converts BMS readings of pack voltage V, current I, maximum cell temperature T, cell-voltage difference ΔV_cell and SOC into 1 Hz time series, and adds synthetic discharge scenarios to widen the SOC range for training. The second layer, the model layer, trains the SOC estimator in TensorFlow/Keras and exports it to TensorFlow Lite. A Node.js service layer, the third layer, hosts the route-energy model (Section 4.5.2) and AMSA (Section 3.3.2); it queries the TomTom Routing API for the route with live traffic and OpenTopoData for SRTM 30 m elevations. A Next.js layer, the API layer, which is the fourth layer, exposes these functions as REST endpoints for a web dashboard, the user interface (UI), which is the final layer.
+FIG: ../paper_figures/fig1_architecture.png | Fig. 3.1: Layered architecture of iBMS and data flow of a trip feasibility request (steps 1–5); dashed: offline training; dotted: planned online SOC feed
+For a trip, when the rider enters the trip details, the dashboard sends the origin, destination, SOC, SOH and cruising speed to the feasibility endpoint, which returns the AMSA decision and its margins as a JSON response, which the dashboard displays. In the current prototype the SOC sent to AMSA is entered on the dashboard, because the LSTM is not yet connected to live BMS data from the vehicle. The stack is built in layers that are independent of each other, so each layer can be changed or moved without changing the others.
+H3: 3.1.2 Full-stack implementation
+Fig. 3.2 shows the system as implemented, with the components of each layer and the external services: data preparation (stand tests, synthetic discharges, CALCE data), learning and estimation, the route-energy model and AMSA in the backend, the Next.js API routes and the web dashboard.
+FIG: figures/fig_fullstack_architecture_landscape.png | Fig. 3.2: Full-stack architecture of iBMS as implemented, with external services and technology stack
+H3: 3.1.3 Hardware–software integration
+Fig. 3.3 shows how the software connects to the vehicle. The pack is measured by the vehicle's own BMS, whose readings were acquired through its mobile app and converted to 1 Hz data for the models. The backend computes the decision and the dashboard disables SPORT mode when ECO-Lock is required. Sending the same command to the vehicle control unit (VCU) over CAN, so that the motor controller limits torque directly, is the planned next step.
+FIG: figures/fig_hw_sw_integration.png | Fig. 3.3: Hardware–software integration of iBMS on the electric two-wheeler (dashed: planned)
+## 3.2 System Specifications (Hardware & Software)
+H3: 3.2.1 Vehicle and system specifications
+TABLE: Table 3.1: System specifications
+Item | Specification
+Vehicle | Electric two-wheeler with LiFePO4 pack and ECO and SPORT drive modes
+Battery pack | 63.5 V nominal (63.8 V at full charge), 30.9 Ah (estimated by Coulomb counting), ≈ 1.96 kWh
+Rated range (on-board display) | ≈ 76 km ECO, ≈ 62 km SPORT (25.8 / 31.6 Wh/km)
+Data acquisition | Vehicle BMS mobile app; readings every ≈ 30 s, interpolated to 1 Hz
+Bench prototype | Single-cell BMS development kit, resistor load, Arduino, MATLAB/Simulink
+Training computer | Intel Core i5-12500H, 16 GB RAM, no GPU
+SOC model | LSTM(64) → Dropout 0.2 → LSTM(32) → Dropout 0.2 → Dense(1); 29,857 parameters; input 50 × (V, I, T)
+Edge model | TensorFlow Lite int8, 67.6 KiB, 0.41 ms per estimate
+Road-load constants | m = 155 kg, C_rr = 0.012, ρ = 1.2 kg/m³, C_dA = 0.5 m², P_aux = 40 W, v_ref = 60 km/h
+ML software | Python 3.13, TensorFlow/Keras 2.20, NumPy, pandas, scikit-learn, SHAP
+Backend | Node.js with Express; deployed on Render
+Frontend | Next.js 14, React 18, Recharts, Google Maps JavaScript API; deployed on Vercel
+External services | TomTom Routing API, OpenTopoData SRTM 30 m, OSRM (fallback), Google Gemini (dashboard assistant)
+
+H3: 3.2.2 Interfaces and endpoints
+The dashboard and backend communicate through REST endpoints with JSON bodies (Table 3.2).
+TABLE: Table 3.2: Main REST endpoints
+Endpoint | Layer | Function
+POST /api/feasibility | Backend and Next.js proxy | Route, traffic, elevation, route physics, ECO/SPORT DTE and per-leg AMSA decision; optional SOC uncertainty margin
+POST /api/predict/dte | Backend and Next.js proxy | DTE for a given SOC, mode and environment
+POST /api/route/distance, /api/route/geometry | Backend | Route length and geometry
+POST /api/elevation | Next.js | Elevation proxy to OpenTopoData
+POST /api/intelligence/* | Next.js | Assistant, explanation, uncertainty and digital-twin panels
+GET /health, /api/status | Backend | Health check and configuration status
+
+H3: 3.2.3 Dashboard functions
+The dashboard provides an SOC control with a battery-status card; ECO and SPORT mode selection with four driving-profile levels that scale the consumption; the route-aware DTE and a charging recommendation; route planning on a map with traffic colouring and alternative routes; a route-physics panel (climb, grade, traffic-jam ratio, regeneration); the AMSA status and ECO-Lock banner; the SOH gauge and RUL estimate; analytics charts; and an intelligence suite with a conversational assistant, an explanation panel, the SOC-uncertainty card and a digital-twin simulator. A role toggle switches between the User view and the Analyst view.
+## 3.3 Flowchart / Algorithm
+H3: 3.3.1 SOC estimation and uncertainty pipeline
+FIG: figures/fig_soc_flow.png | Fig. 3.4: SOC estimation and uncertainty pipeline
+In the pipeline of Fig. 3.4, the BMS readings are interpolated to 1 Hz (synthetic full discharges are added for training) and cut into windows of 50 samples of voltage, current and temperature that never cross session boundaries. The inputs are scaled with training-data statistics only, and the LSTM outputs the SOC at the last step of the window; the SOC itself is never an input. For the risk-aware decision, the network is run 30 times with dropout active: the mean μ is the estimate, the standard deviation σ the uncertainty, and a conformal factor q gives the lower bound SOC_lb = μ − qσ, which the true SOC exceeds with 95 % confidence.
+H3: 3.3.2 Route-level AMSA
+FIG: figures/fig_amsa_flow.png | Fig. 3.5: Flowchart of the route-level Adaptive Mode Switching Algorithm
+The AMSA of [14] switches modes while riding, using the instantaneous slope, but on a long slope this is already too late, because if the energy is not there beforehand, no switching on the way can save the trip. The modification done here is that AMSA (Fig. 3.5) turns the real-time mode selection of [14] into a pre-trip check per leg. Each leg length d_i is compared with the ECO and SPORT DTE at the SOC expected at the start of the leg. The leg is SAFE if reachable in SPORT mode (manual control), CRITICAL if reachable only in ECO mode (ECO-Lock enforced) and IMPOSSIBLE otherwise (charging stop required). The SOC at the start of the next leg follows Eq. (4.8) and is reset to 100 % after a charging stop.
+- Input: legs $d_1, \dots, d_n$; initial SOC (minus the uncertainty margin in risk-aware mode); SOH; speed; route features.
+- For each leg $i$: compute $DTE_{\mathrm{ECO}}(SOC_i)$ and $DTE_{\mathrm{SPORT}}(SOC_i)$ with Eqs. (4.4)–(4.7).
+- If $d_i > DTE_{\mathrm{ECO}}$: IMPOSSIBLE, CHARGE_REQUIRED; stop.
+- Else if $d_i > DTE_{\mathrm{SPORT}}$: CRITICAL, FORCE_ECO_MODE (SPORT disabled).
+- Else: SAFE, MANUAL_MODE.
+- Update $SOC_{i+1}$ with Eq. (4.8), or set it to 100 % after a charging stop.
+Since DTE is proportional to SOC, single-leg thresholds are analytic (Eq. (4.8)). In risk-aware mode, the model is evaluated at SOC_lb instead of the point estimate, so an overestimated SOC cannot turn an infeasible trip into an accepted one; the endpoint takes the margin μ − SOC_lb as an input. Following the 40 % threshold below which [14] prefers ECO mode, the dashboard also disables SPORT mode below 40 % SOC. ECO-Lock is issued as a software command at the rider interface; torque limiting through the vehicle control unit (VCU) is planned.
+## 3.4 Project Planning & Timeline
+TABLE: Table 3.3: Project phases and timeline
+Phase | Period | Main activities
+1. Study and prototype | July 2026 | Literature review; LSTM and AMSA study; single-cell BMS kit with Arduino and Simulink; first prototype dashboard
+2. Data collection | August 2026 | Six stand-test sessions; transcription and interpolation; synthetic data generator; first training pipeline
+3. Software development | September – October 2026 | Next.js dashboard, Express backend, AMSA engine, route planning, intelligence features, Vercel deployment
+Mid-term review | 15 September 2026 | Architecture and first results
+4. Verification and experiments | 15–16 October 2026 | Code audit; leak-free LSTM with baselines; elevation fix; route study; sensitivity; edge and SHAP
+5. Benchmark and uncertainty | 18 October 2026 | CALCE benchmark; EKF with RC model; uncertainty and risk-aware AMSA
+6. Deployment and documentation | 19–21 October 2026 | Backend on Render connected to the dashboard; IEEE paper, report and presentation
+
+## 3.5 Challenges and Complexities
+- No road data: the vehicle could only be tested on a stand, and each session covers a small SOC range. Synthetic full discharges were added for training, the public CALCE data were used for a full-range test, and consumption was calibrated from the rated range.
+- Sparse readings: the BMS app showed values only every ≈ 30 s, transcribed from screen recordings. They were interpolated to 1 Hz with small added noise.
+- Data leakage: the first LSTM used the SOC as an input and an early comparison scored it against its own output. Both were discarded; the final model never sees the SOC and data are split by scenario and session.
+- Choice of baselines: on the field data a constant predictor (1.22 %) matched the fine-tuned LSTM (1.24 %), so the field data cannot rank estimators and tracking was evaluated on CALCE.
+- Flat LiFePO4 voltage curve: a simple EKF reached only 10.4 % on CALCE; an RC model with measured OCV (0.96 %) gave a fair baseline.
+- Elevation bug: the backend requested an elevation dataset the public API does not offer, so every route was flat; it was switched to SRTM 30 m with at most 100 points per request.

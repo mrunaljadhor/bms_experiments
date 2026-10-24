@@ -1,0 +1,140 @@
+{
+ "A1-007/DST": {
+  "duration_s": 7387,
+  "capacity_Ah": 1.032,
+  "I_min": -3.849,
+  "I_max": 1.925
+ },
+ "A1-007/US06": {
+  "duration_s": 6980,
+  "capacity_Ah": 1.0325,
+  "I_min": -3.693,
+  "I_max": 0.698
+ },
+ "A1-007/FUDS": {
+  "duration_s": 7400,
+  "capacity_Ah": 1.0338,
+  "I_min": -3.849,
+  "I_max": 1.991
+ },
+ "A1-008/DST": {
+  "duration_s": 7460,
+  "capacity_Ah": 1.0402,
+  "I_min": -3.85,
+  "I_max": 1.925
+ },
+ "A1-008/US06": {
+  "duration_s": 7184,
+  "capacity_Ah": 1.0549,
+  "I_min": -3.66,
+  "I_max": 0.748
+ },
+ "A1-008/FUDS": {
+  "duration_s": 7605,
+  "capacity_Ah": 1.0556,
+  "I_min": -3.85,
+  "I_max": 2.006
+ }
+}
+Epoch 1/40
+681/681 - 15s - 23ms/step - loss: 2072.4854 - mae: 36.9579 - val_loss: 749.9111 - val_mae: 22.9912
+Epoch 2/40
+681/681 - 13s - 19ms/step - loss: 1024.9203 - mae: 24.1388 - val_loss: 319.3491 - val_mae: 16.5623
+Epoch 3/40
+681/681 - 12s - 18ms/step - loss: 518.8210 - mae: 15.9030 - val_loss: 53.4660 - val_mae: 6.0651
+Epoch 4/40
+681/681 - 13s - 20ms/step - loss: 259.9751 - mae: 11.0696 - val_loss: 42.3396 - val_mae: 5.6583
+Epoch 5/40
+681/681 - 13s - 19ms/step - loss: 129.1053 - mae: 7.7651 - val_loss: 43.3812 - val_mae: 5.2693
+Epoch 6/40
+681/681 - 14s - 21ms/step - loss: 73.3480 - mae: 5.9038 - val_loss: 67.1948 - val_mae: 6.5515
+Epoch 7/40
+681/681 - 15s - 22ms/step - loss: 50.9765 - mae: 5.0597 - val_loss: 23.0844 - val_mae: 3.9017
+Epoch 8/40
+681/681 - 14s - 20ms/step - loss: 41.7632 - mae: 4.6191 - val_loss: 21.5865 - val_mae: 3.8562
+Epoch 9/40
+681/681 - 13s - 18ms/step - loss: 38.0325 - mae: 4.4218 - val_loss: 50.7872 - val_mae: 5.9128
+Epoch 10/40
+681/681 - 13s - 19ms/step - loss: 34.6253 - mae: 4.2446 - val_loss: 53.0067 - val_mae: 6.3322
+Epoch 11/40
+681/681 - 13s - 19ms/step - loss: 33.4525 - mae: 4.1571 - val_loss: 27.0161 - val_mae: 3.7087
+Epoch 12/40
+681/681 - 11s - 16ms/step - loss: 32.6454 - mae: 4.1089 - val_loss: 23.1624 - val_mae: 3.9388
+Epoch 13/40
+681/681 - 12s - 18ms/step - loss: 31.6151 - mae: 4.0333 - val_loss: 38.1362 - val_mae: 4.9964
+fold DST: 13 epochs, 171 s, R_int=197.4 mOhm
+Epoch 1/40
+698/698 - 13s - 18ms/step - loss: 1997.5396 - mae: 36.2973 - val_loss: 758.7030 - val_mae: 24.8725
+Epoch 2/40
+698/698 - 11s - 15ms/step - loss: 1004.8693 - mae: 24.0801 - val_loss: 525.0269 - val_mae: 21.5894
+Epoch 3/40
+698/698 - 11s - 16ms/step - loss: 588.1791 - mae: 18.2880 - val_loss: 76.3845 - val_mae: 7.0125
+Epoch 4/40
+698/698 - 11s - 15ms/step - loss: 295.1148 - mae: 12.1568 - val_loss: 37.0121 - val_mae: 4.8014
+Epoch 5/40
+698/698 - 11s - 16ms/step - loss: 138.7284 - mae: 8.1987 - val_loss: 23.7470 - val_mae: 3.5881
+Epoch 6/40
+698/698 - 11s - 15ms/step - loss: 77.6116 - mae: 6.1821 - val_loss: 26.0958 - val_mae: 4.2157
+Epoch 7/40
+698/698 - 11s - 15ms/step - loss: 58.8621 - mae: 5.5135 - val_loss: 26.8036 - val_mae: 3.8037
+Epoch 8/40
+698/698 - 11s - 15ms/step - loss: 46.3114 - mae: 4.9440 - val_loss: 59.4737 - val_mae: 5.8655
+Epoch 9/40
+698/698 - 11s - 16ms/step - loss: 41.9154 - mae: 4.7196 - val_loss: 26.2920 - val_mae: 3.9478
+Epoch 10/40
+698/698 - 11s - 15ms/step - loss: 39.6655 - mae: 4.5934 - val_loss: 33.0000 - val_mae: 4.7424
+fold US06: 10 epochs, 110 s, R_int=196.0 mOhm
+Epoch 1/40
+677/677 - 12s - 18ms/step - loss: 2196.3367 - mae: 38.1163 - val_loss: 769.3859 - val_mae: 21.3759
+Epoch 2/40
+677/677 - 10s - 15ms/step - loss: 1095.2386 - mae: 24.3142 - val_loss: 278.3014 - val_mae: 12.9203
+Epoch 3/40
+677/677 - 10s - 15ms/step - loss: 568.5378 - mae: 16.4221 - val_loss: 86.3191 - val_mae: 7.7659
+Epoch 4/40
+677/677 - 11s - 16ms/step - loss: 295.8814 - mae: 11.7406 - val_loss: 38.5902 - val_mae: 4.9745
+Epoch 5/40
+677/677 - 10s - 15ms/step - loss: 150.8167 - mae: 8.3504 - val_loss: 34.6544 - val_mae: 4.7310
+Epoch 6/40
+677/677 - 10s - 15ms/step - loss: 84.6485 - mae: 6.2818 - val_loss: 34.8301 - val_mae: 4.7596
+Epoch 7/40
+677/677 - 11s - 16ms/step - loss: 55.8599 - mae: 5.2231 - val_loss: 20.9280 - val_mae: 3.7117
+Epoch 8/40
+677/677 - 10s - 15ms/step - loss: 45.4459 - mae: 4.7766 - val_loss: 29.7156 - val_mae: 4.3424
+Epoch 9/40
+677/677 - 10s - 15ms/step - loss: 39.1819 - mae: 4.4924 - val_loss: 16.6558 - val_mae: 3.1777
+Epoch 10/40
+677/677 - 11s - 16ms/step - loss: 36.2679 - mae: 4.3643 - val_loss: 19.9696 - val_mae: 3.5029
+Epoch 11/40
+677/677 - 11s - 16ms/step - loss: 34.1105 - mae: 4.2345 - val_loss: 17.5592 - val_mae: 3.3292
+Epoch 12/40
+677/677 - 11s - 16ms/step - loss: 34.2268 - mae: 4.2455 - val_loss: 23.4374 - val_mae: 4.0596
+Epoch 13/40
+677/677 - 10s - 15ms/step - loss: 33.3801 - mae: 4.1632 - val_loss: 14.9938 - val_mae: 3.1469
+Epoch 14/40
+677/677 - 10s - 15ms/step - loss: 32.5316 - mae: 4.1227 - val_loss: 26.7732 - val_mae: 4.0291
+Epoch 15/40
+677/677 - 11s - 16ms/step - loss: 32.4313 - mae: 4.0897 - val_loss: 19.1312 - val_mae: 3.4992
+Epoch 16/40
+677/677 - 11s - 16ms/step - loss: 32.8771 - mae: 4.1147 - val_loss: 20.5185 - val_mae: 3.7304
+Epoch 17/40
+677/677 - 11s - 16ms/step - loss: 31.6948 - mae: 4.0465 - val_loss: 12.0504 - val_mae: 2.8912
+Epoch 18/40
+677/677 - 11s - 16ms/step - loss: 30.5966 - mae: 3.9796 - val_loss: 20.1981 - val_mae: 3.7129
+Epoch 19/40
+677/677 - 11s - 16ms/step - loss: 31.2671 - mae: 4.0068 - val_loss: 28.5833 - val_mae: 4.5780
+Epoch 20/40
+677/677 - 11s - 16ms/step - loss: 29.8306 - mae: 3.9194 - val_loss: 18.5906 - val_mae: 3.5611
+Epoch 21/40
+677/677 - 11s - 16ms/step - loss: 29.7364 - mae: 3.9038 - val_loss: 13.3593 - val_mae: 2.9629
+Epoch 22/40
+677/677 - 11s - 16ms/step - loss: 29.7370 - mae: 3.8893 - val_loss: 15.0448 - val_mae: 3.3429
+fold FUDS: 22 epochs, 236 s, R_int=199.3 mOhm
+                        Method    MAE   RMSE  MaxErr
+                LSTM (no SOC0)  4.183  6.119  29.931
+            Coulomb, true SOC0  0.111  0.139   0.400
+            Coulomb, SOC0 -2 %  2.109  2.111   2.400
+           Coulomb, SOC0 -10 % 10.109 10.109  10.400
+ EKF (measured OCV), true SOC0 10.378 12.774  33.703
+EKF (measured OCV), SOC0 -10 % 10.378 12.774  33.703
+  Constant (mean training SOC) 24.646 28.499  49.857
+done in 531 s

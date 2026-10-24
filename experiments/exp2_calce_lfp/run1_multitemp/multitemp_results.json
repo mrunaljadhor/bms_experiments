@@ -1,0 +1,23 @@
+{
+ "LSTM_multitemp_25C": {
+  "MAE": 3.166,
+  "RMSE": 4.766,
+  "MaxErr": 28.785
+ },
+ "mean_over_all_temps_MAE": 3.182,
+ "history": {
+  "DST": {
+   "epochs": 28,
+   "train_s": 721.3
+  },
+  "US06": {
+   "epochs": 11,
+   "train_s": 323.1
+  },
+  "FUDS": {
+   "epochs": 30,
+   "train_s": 902.1
+  }
+ },
+ "runtime_s": 1966.2
+}

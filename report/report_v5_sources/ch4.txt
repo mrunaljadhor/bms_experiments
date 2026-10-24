@@ -1,0 +1,75 @@
+=== CHAPTER 4 SYSTEM IMPLEMENTATION
+## 4.1 Hardware Design & Circuit Diagrams
+The hardware work served two purposes: learning BMS measurement and protection on a safe single-cell bench set-up, and acquiring data from the battery pack of the electric two-wheeler through its own BMS.
+H3: 4.1.1 Bench prototype
+Fig. 4.1 shows the connection diagram of the bench prototype. A single Li-ion test cell is connected to the B+ and B− terminals of a single-cell BMS development kit, which contains a MOSFET protection switch, a current-sense shunt, a voltage divider, an NTC temperature sensor and protection logic for over-voltage, under-voltage, over-current and over-temperature. A resistor load on the P+ and P− terminals discharges the cell, and the measured voltage, current and temperature are read by an Arduino and sent over USB to a computer.
+FIG: figures/fig_circuit_bench.png | Fig. 4.1: Connection diagram of the single-cell BMS bench prototype (red: power path; blue: measured signals; green: software)
+The computer runs a MATLAB/Simulink model (Fig. 4.2) that converts the ADC readings, applies the protection limits, estimates cell parameters and displays the results, so that charge, discharge and protection behaviour could be observed safely before working with the vehicle pack.
+FIG: figures/hw_simulink.png | Fig. 4.2: Simulink model used for live monitoring of the single-cell prototype
+H3: 4.1.2 Vehicle measurement chain and stand tests
+Field data were recorded on a LiFePO4 electric two-wheeler (63.5 V pack) on a stand with the rear wheel lifted, so there was no rider and no road load. Six sessions of 266–285 s covered two modes, SPORT and ECO, as well as three cell configurations, series, parallel and single, using the throttle and brakes, making a combination of six sessions of about 4.5 minutes each. Voltage, current, maximum cell temperature, cell-voltage difference and BMS-reported SOC readings came from BMS-app screen recordings at about 30 s intervals, interpolated to 1 Hz and perturbed with Gaussian noise (σ_V = 0.02 V, σ_I = 0.10 A, σ_ΔV = 1 mV), giving 1,668 samples (62.4–63.8 V, up to 8.0 A, 30–31 °C). Each session covers only a tiny SOC change, so it cannot show tracking. That is why the CALCE data were used.
+The pack capacity was estimated from these data by Coulomb counting (charge drawn divided by the reported SOC drop). The per-session estimates ranged from 20.7 to 40.5 Ah, with a pooled value of 28.9 Ah; the spread comes from the 0.1 % SOC resolution. The consistent value of 30.9 Ah was adopted, giving about 1,962 Wh at 63.5 V.
+## 4.2 Component Selection and Justification
+TABLE: Table 4.1: Component and tool selection
+Component / tool | Alternatives considered | Reason for selection
+LiFePO4 battery pack | NMC, lead-acid | Pack of the test vehicle; high thermal safety and long cycle life
+Single-cell BMS kit + Arduino | Custom PCB | Low cost and safe; all BMS blocks on one board
+LSTM network | Feed-forward network, GRU | Learns temporal voltage–current–temperature patterns; needs no initial SOC, OCV curve or capacity
+EKF with RC model | Coulomb counting, R-only EKF | Standard model-based estimator [24]; fair baseline
+TomTom Routing API | Google Directions, OSRM | Route and live traffic sections in one request
+OpenTopoData SRTM 30 m | SRTM 90 m | Free global 30 m elevation data
+Node.js / Next.js | Python Flask | Lightweight backend and dashboard; free cloud deployment
+TensorFlow Lite int8 | Full Keras model | 5.7× smaller model with sub-millisecond inference
+Monte-Carlo dropout + conformal calibration | Deep ensembles | No retraining; calibrated coverage
+
+## 4.3 PCB/Breadboard Implementation
+No custom PCB was fabricated. The prototype was assembled from the ready-made BMS development kit (Fig. 4.3) with the test cell in its holder, the resistor load on the output terminals and an Arduino connected by jumper wires. Each measured signal was checked against a multimeter reading in Simulink, and controlled discharges were used to trigger the protection functions. On the vehicle, the existing BMS served as the measurement system.
+FIG: figures/hw_kit.png | Fig. 4.3: Assembled bench prototype: single-cell BMS development kit with resistor load
+For embedded use, the SOC model was converted to TensorFlow Lite with int8 quantization (67.6 KiB, 0.41 ms per estimate), which fits the memory of common 32-bit microcontrollers. Running it on a microcontroller next to the BMS and sending the AMSA command to the VCU is the next prototyping step.
+## 4.4 Simulation/Coding Results with Validation
+H3: 4.4.1 Datasets and LSTM training
+Because the stand-test sessions cover a narrow SOC range, 100 synthetic discharge scenarios (300–800 steps, from 90–100 % down to 5–20 % SOC) were generated from a piecewise LiFePO4 voltage curve, field-seeded current profiles and an SOC-dependent heating model, giving 55,971 samples split 70/15/15 by scenario. For a full-range test on real cells, the public CALCE A123 LiFePO4 dataset [28], [29] was used: 1.1 Ah cells discharged from 100 % to 2.0 V under the DST, US06 and FUDS cycles at 0–50 °C (−10 °C was excluded because its records are incomplete). The LSTM was trained on two cycles at all temperatures and tested on the unseen third at 25 °C, against Coulomb counting and an EKF with a first-order RC model [24] whose OCV curve came from a C/20 test.
+Training uses the Adam optimizer (learning rate 10⁻³, batch size 32) on the mean squared error, with early stopping after 5 epochs without validation improvement; it ended after 35 epochs (582 s on the laptop CPU). On held-out synthetic scenarios the LSTM reached 0.20 % MAE and R² = 0.9997 (Fig. 4.4). On the field data, the LSTM was tested zero-shot and with leave-one-session-out (LOSO) fine-tuning (Adam, learning rate 10⁻⁴, 10 epochs), and Coulomb counting and the EKF were run with the true SOC₀ and with a +2 % error.
+FIG: ../experiments/exp1_soc_lstm/fig_synthetic_test_scenario.png | Fig. 4.4: LSTM estimate and reference SOC on a held-out synthetic discharge scenario
+H3: 4.4.2 Kinematic synthesis
+Because the vehicle was on a stand, a speed proxy was synthesized from the discharge current: a throttle proxy, a square-root speed map with v_max = 55 km/h and an exponential moving average with α = 0.15. Validation found a missing reset between sessions that caused an acceleration spike of 11.36 m/s²; after the fix the maximum acceleration is 0.80 m/s² and no sample exceeds plausible limits (Fig. 4.5).
+FIG: ../kinematics_validation/fig_speed_trace.png | Fig. 4.5: Discharge current, synthesized speed and braking events in one session after the correction
+H3: 4.4.3 Verification of the route-energy model
+An independent Python implementation of the model reproduced the backend's DTE values within 0.08 km, and the endpoint returned CRITICAL with forced ECO mode at the midpoint of each ECO-Lock band. Table 4.2 compares a hand calculation with the backend for Dehradun → Mussoorie (33.3 km, climb 1,375 m, descent 42 m, jam ratio 0.014). A flat-road estimate would give 76.1 km and accept the trip from 43.7 % SOC.
+TABLE: Table 4.2: Hand calculation versus backend output (Dehradun → Mussoorie, ECO mode, 60 km/h, SOH 100 %)
+Step | Hand calculation | Backend output
+Uphill grade g_u | 1,375 / 33,300 × 100 = 4.13 % | 4.13 %
+Climbing factor f_up | 1 + 0.15 × 4.13 = 1.62 | 1.62
+ECO consumption | 25.8 × 0.989 × 1.004 × 1.62 × 0.994 ≈ 41.2 Wh/km | 41.2 Wh/km
+Full-charge ECO range | 1,962 / 41.2 ≈ 47.6 km | 47.6 km
+Minimum SOC for ECO | 33.3 / 47.6 ≈ 70 % | 69.9 %
+
+At 80 % SOC on this route the endpoint returned FORCE_ECO_MODE (between the 69.9 % ECO and 85.6 % SAFE thresholds); with a 15-point uncertainty margin the decision SOC fell to 65 % and it returned CHARGE_REQUIRED, as intended.
+## 4.5 Mathematical Modelling
+H3: 4.5.1 State of charge
+Coulomb counting: with the discharge current $I_k$ (A), recorded as negative by the BMS, taken as positive, the SOC (%) is updated as
+EQ: SOC_k = SOC_{k-1} - \frac{100\, I_k\, \Delta t}{3600\, C_{\mathrm{nom}}} | (4.1)
+where Δt (s) is the sampling interval and $C_{\mathrm{nom}} = 30.9$ Ah is the total capacity of the pack, estimated from the field data. Coulomb counting only integrates the current and never checks it against the voltage, so any error in SOC₀ stays in the estimate. For example, if SOC is wrong by even 2 %, it will stay wrong by 2 % throughout.
+EKF baseline: an EKF [23], [24] uses (4.1) for prediction and corrects it with the terminal-voltage residual
+EQ: \hat{x}_k = \hat{x}_k^{-} + K_k\left(V_k - OCV(\hat{x}_k^{-}) + R_{\mathrm{int}} I_k\right) | (4.2)
+where $\hat{x}_k^{-}$ is the predicted SOC, $K_k$ the Kalman gain, $OCV(\cdot)$ a piecewise-linear LiFePO4 open-circuit-voltage curve for a 63.5 V pack and $R_{\mathrm{int}}$ (Ω) the internal resistance, fitted by least squares on the training sessions. It estimates SOC like Coulomb counting, then compares the measured voltage with what the battery model says the voltage should be at that SOC, and corrects the SOC to reduce the difference.
+LSTM estimator: a two-layer LSTM [22] maps a window of 50 samples (50 s at 1 Hz) of V, I and T to the SOC at the last step. The stack is LSTM(64), dropout 0.2, LSTM(32), dropout 0.2 and a linear output, with 29,857 parameters. SOC is not an input, so the estimate does not depend on SOC₀, hence initial SOC is not required. A noticeable advantage is that no initial SOC, OCV curve or capacity value is required here for calculations. To prevent leakage, windows are built inside single discharge scenarios, the data are split by scenario, and the scalers are fitted on the training scenarios only. Each cell updates its memory $c_t$ and hidden state $h_t$ with the forget, input and output gates $f_t$, $i_t$, $o_t$:
+EQ: c_t = f_t \odot c_{t-1} + i_t \odot \tilde{c}_t, \qquad h_t = o_t \odot \tanh(c_t) | (4.3)
+SOH model: the SOH is derived from a parametric model that subtracts cycle fade, calendar fade and bounded temperature and imbalance penalties from an initial value; SOH shrinks the usable energy, as an aged pack at 100 % SOC holds less energy. With assumed ageing constants (850 equivalent cycles of a 5,000-cycle life, 3.5 years of age) it gives SOH ≈ 94.3 %. It is not learned or evaluated here; it only scales the pack energy in (4.4).
+H3: 4.5.2 Route-energy model and DTE
+The energy available for propulsion (Wh) is
+EQ: E_{\mathrm{av}} = \frac{SOC}{100}\cdot\frac{SOH}{100}\cdot C_{\mathrm{nom}} V_{\mathrm{nom}} | (4.4)
+with $V_{\mathrm{nom}} = 63.5$ V, so $C_{\mathrm{nom}} V_{\mathrm{nom}} \approx 1962$ Wh. The TomTom route is down-sampled to at most 100 points, whose elevations are taken from the SRTM 30 m model. Every "up" step is summed into total climb and every "down" step into total descent. TomTom sections marked as jams or delayed by more than 20 s give the jam length $L_{\mathrm{jam}}$ (about 50 m per route point). The cumulative uphill and downhill grades (%) and the traffic-jam ratio are
+EQ: g_u = \frac{100}{L}\sum_j \max(0, \Delta h_j), \qquad g_d = \frac{100}{L}\sum_j \max(0, -\Delta h_j), \qquad J = \min\left(1, \frac{L_{\mathrm{jam}}}{L}\right) | (4.5)
+where $\Delta h_j$ (m) is the elevation change between samples and $L$ (m) the route length. Speed matters through air drag, as it makes up about 80 % of the road load at 60 km/h, which is why speed has the biggest effect. Congestion also lowers the effective speed to $v_{\mathrm{eff}} = \bar{v}(1 - 0.5J)$, with an assumed cruising speed $\bar{v}$ = 60 km/h. Speed enters through the road-load force
+EQ: F(v) = m g C_{rr} + \tfrac{1}{2}\rho C_dA v^2 + \frac{P_{\mathrm{aux}}}{v} | (4.6)
+with m = 155 kg, g = 9.81 m/s², $C_{rr}$ = 0.012, ρ = 1.2 kg/m³, $C_dA$ = 0.5 m² and $P_{\mathrm{aux}}$ = 40 W. The drag area lies within wind-tunnel values for motorcycles with an upright rider (0.50–0.59 m² [27]), and $C_{rr}$ is close to the 0.01 used for an Indian electric two-wheeler in [14]; neither was measured on the test vehicle. The consumption (Wh/km) in mode m ∈ {ECO, SPORT} and the DTE (km) are
+EQ: c_m = c_{0,m}\,\frac{F(v_{\mathrm{eff}})}{F(v_{\mathrm{ref}})}\, f_{sg}\, f_{acc}\, f_{up}\, f_{dn}\, f_T, \qquad DTE_m = \frac{E_{\mathrm{av}}}{c_m} | (4.7)
+where $c_{0,m}$ is the flat-road consumption at $v_{\mathrm{ref}}$ = 60 km/h; $f_{sg} = 1 + J(0.3 + 0.4a)$ is the stop-and-go factor with acceleration aggressiveness a ∈ [0, 1]; $f_{acc} = 1 + 0.15a$; $f_{up} = 1 + 0.15 g_u$; $f_{dn} = \max(0.2, 1 - 0.08 g_d \eta_r)$ with regeneration efficiency $\eta_r = 0.6 + 0.2J$; and $f_T = 1 + 0.005\Delta T_a$ for an ambient-temperature deviation $\Delta T_a$ ≥ 0 °C. The base values $c_{0,\mathrm{ECO}}$ = 25.8 Wh/km and $c_{0,\mathrm{SPORT}}$ = 31.6 Wh/km follow from dividing the pack energy by the approximate full-charge ranges shown on the vehicle display (76 km in ECO, 62 km in SPORT); they were not measured here. The correction factors in (4.7) are empirical and linear, so (4.7) is a calibratable structure rather than a fitted model. Its sensitivity to $c_0$ is reported in Section 5.3.
+H3: 4.5.3 AMSA decision and uncertainty
+The SOC carried to the next leg and the minimum SOC to complete a route of length $d$ in mode $m$ are
+EQ: SOC_{i+1} = SOC_i\left(1 - \frac{d_i}{DTE_{\mathrm{ECO}}(SOC_i)}\right), \qquad SOC_{\min,m} = 100\,\frac{d}{DTE_m(100\,\%)} | (4.8)
+Uncertainty is estimated by Monte-Carlo dropout [25]: dropout stays active at inference, and 30 stochastic passes give a mean μ and a standard deviation σ per window. Raw dropout intervals are overconfident (too narrow), so they are calibrated by split-conformal prediction [26] on the validation windows. The 95 % quantile q of (μ − SOC)/σ gives the lower bound
+EQ: SOC_{lb} = \mu - q\,\sigma | (4.9)
+and the score |μ − SOC|/σ gives a two-sided interval. Accuracy is measured by the mean absolute error and root-mean-square error over $N$ samples:
+EQ: \mathrm{MAE} = \frac{1}{N}\sum_k |\hat{y}_k - y_k|, \qquad \mathrm{RMSE} = \sqrt{\frac{1}{N}\sum_k (\hat{y}_k - y_k)^2} | (4.10)

@@ -1,0 +1,38 @@
+=== CHAPTER 6 DISCUSSION & CONCLUSION
+## 6.1 Key Achievements & Contributions
+All five objectives of Chapter 1 were achieved (Table 6.1).
+TABLE: Table 6.1: Objectives and achieved evidence
+Objective | Status | Evidence
+1. Leak-free LSTM SOC estimator with fair baselines | Achieved | 0.20 % MAE on synthetic data; 3.17 % on unseen CALCE cycles; Coulomb, EKF and constant baselines
+2. Route-energy model | Achieved | SRTM 30 m terrain, live traffic, road-load model and SOH; verified by hand calculation and re-implementation
+3. Route-level AMSA | Achieved | Eight real route directions; ECO-Lock bands; infeasible route detected
+4. Edge-ready, explainable, uncertainty-aware estimator | Achieved | 67.6 KiB, 0.41 ms; SHAP on the LSTM; 96.6 % calibrated coverage; unsafe acceptances 0.71 → 0.007 %
+5. Integrated system and publication | Achieved | Dashboard on Vercel, backend on Render; IEEE conference paper
+
+The main contributions are a route-energy model with closed-form SOC thresholds for every route; a pre-trip, leg-wise extension of AMSA that enforces ECO-Lock or a charging stop; a leak-free LSTM SOC estimator benchmarked honestly on field and public data; an edge-ready, explainable and uncertainty-aware estimator that drives a risk-aware decision; and a deployed dashboard and backend.
+## 6.2 Novelty and Technical Improvements
+The novelty of iBMS lies in connecting three elements that earlier work treated separately. First, the decision is taken before the trip and per leg from the terrain and traffic of the whole route, rather than reacting to the current gradient, and the minimum SOC for each mode can be computed exactly. Second, the battery state enters the decision through an estimator that needs no initial SOC and whose uncertainty is calibrated, so the decision stays safe when the estimate is wrong. Third, the decision is enforced, not shown as a warning. The evaluation is also a contribution: the constant baseline exposes when field data are too narrow to rank estimators, and the route results are checked by hand calculation, re-implementation and repetition.
+Since the mid-term review, the SOC model was rebuilt without data leakage and benchmarked fairly, the elevation service was repaired so that terrain actually enters the model, the heuristic speed factor was replaced by a physics-based road-load model, the dashboard was connected to the real AMSA in the backend, the simulated federated-learning panel was replaced by the SOC-uncertainty card, and the system was deployed publicly.
+## 6.3 Comparison with Existing Methods
+TABLE: Table 6.2: Comparison of AMSA [14] and iBMS
+Aspect | AMSA [14] | iBMS (this work)
+SOC estimation | Coulomb counting | LSTM without initial SOC, with calibrated uncertainty
+Gradient information | Instantaneous gradient while riding | Cumulative climb and descent of the whole route
+Traffic | Predefined drive cycle | Live traffic from TomTom
+Time of decision | During the ride | Before departure, for every leg
+Battery health | Not used | Scales the available energy
+Decision output | Automatic mode switching, limp mode | SAFE / ECO-Lock / charging stop
+Evaluation | Simulink MIL on a 10 km Pune profile | Eight real route directions, deployed prototype
+
+Compared with a conventional range display, iBMS avoided accepting infeasible hill trips across SOC bands of up to 26 percentage points. Compared with Coulomb counting, the LSTM does not depend on the initial SOC; compared with the EKF, it is less accurate (3.17 % vs 0.96 % on CALCE) but needs no OCV curve, cell parameters or initial SOC. Unlike the estimation and routing works of Chapter 2, iBMS uses its estimate in an enforced decision about how a given route can be ridden.
+## 6.4 Limitations and Future Scope
+The main limitations are:
+- Data: 0.2–0.4 % SOC per session, so field SOC errors cannot rank estimators and tracking is shown only on synthetic and CALCE data; LOSO testing is across sessions of the same vehicle.
+- Calibration: the base consumption $c_0$ comes from approximate display ranges, the coefficients in (4.6) and (4.7) are assumptions, and the route study uses a fixed speed of 60 km/h.
+- Terrain and traffic: on flat roads, the climb is inflated by SRTM noise (about 4 m/km), sampling only 100 points along the route misses short grades, and the jam length is approximated from route-point counts.
+- Baselines: the naive estimator models an SOC-proportional display, which is not the vehicle's own algorithm, and the field EKF uses an OCV curve not measured on the pack.
+- Deployment: ECO-Lock only acts at the software level and does not intervene in the vehicle hardware. The SOC uncertainty was calibrated on laboratory cells, and its lower bound is less reliable in the cold (0–10 °C), so it must be re-tuned on the real pack. The system also depends on external routing and elevation services.
+All route-level results are therefore model-based, and on-road validation is the next step.
+Future scope includes on-road validation with GPS speed and measured trip energy, a force-based grade and stop-and-go model, a measured pack OCV curve, charging-station-aware routing, embedded deployment with ECO-Lock actuated through the VCU, and pack-level re-tuning of the SOC uncertainty.
+## 6.5 Conclusion
+iBMS integrates LSTM SOC estimation with a route-energy model using speed, traffic and topography for electric two-wheelers, and the stack extends AMSA from live mode selection to a pre-trip, leg-wise check that enforces ECO-Lock or a charging stop. A terrain-unaware estimator overestimated the range of ECO mode on climbs by 53–60 % and accepted a 60 km hilly route that AMSA rejects even from a full charge. The LSTM requires no initial SOC; it achieves 0.20 % MAE on synthetic discharge cycles and 3.17 % on unseen CALCE cycles, whereas 0.96 % is achieved by an EKF with a measured OCV. Fine-tuning on the stand tests reduced the error from 7.37 % to 1.24 %, but a complete-discharge field test is still required to rank the estimators. The int8 model occupies 67.6 KiB and inference requires 0.41 ms, its SHAP attributions show that the model relies mainly on recent terminal voltage, and deciding on its calibrated lower SOC bound reduces the chances of accepting unsafe routes by two orders of magnitude. The system is deployed and publicly accessible, and the work has been written up as an IEEE conference paper.

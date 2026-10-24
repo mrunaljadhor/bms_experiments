@@ -1,0 +1,44 @@
+{
+ "FedAvg_25C": {
+  "MAE": 8.994,
+  "RMSE": 12.746,
+  "MaxErr": 38.596
+ },
+ "Centralized_25C (run_exp2c)": {
+  "MAE": 3.166,
+  "RMSE": 4.766,
+  "MaxErr": 28.785
+ },
+ "Local_only_mean_MAE_per_fold": {
+  "DST": 16.563,
+  "US06": 16.696,
+  "FUDS": 15.91
+ },
+ "Local_only_mean_MAE": 16.39,
+ "communication": {
+  "DST": {
+   "model_KB": 116.62890625,
+   "per_round_MB": 3.1890716552734375,
+   "rounds_to_best": 12,
+   "total_to_best_MB": 38.26885986328125,
+   "raw_upload_MB": 3.0771636962890625
+  },
+  "US06": {
+   "model_KB": 116.62890625,
+   "per_round_MB": 3.1890716552734375,
+   "rounds_to_best": 10,
+   "total_to_best_MB": 31.890716552734375,
+   "raw_upload_MB": 3.15008544921875
+  },
+  "FUDS": {
+   "model_KB": 116.62890625,
+   "per_round_MB": 3.1890716552734375,
+   "rounds_to_best": 12,
+   "total_to_best_MB": 38.26885986328125,
+   "raw_upload_MB": 3.0491485595703125
+  }
+ },
+ "clients": 14,
+ "rounds": 40,
+ "runtime_s": 1975.6
+}

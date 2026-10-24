@@ -1,0 +1,25 @@
+Route,Scenario,J,ECO_DTE_100,SPORT_DTE_100,SAFE_at_SOC,ECO_min_SOC
+New Delhi → Noida,measured,0.0,73.2,59.8,47.5,38.8
+New Delhi → Noida,moderate,0.2,81.4,66.4,42.7,34.9
+New Delhi → Noida,heavy,0.5,97.3,79.4,35.7,29.2
+Noida → New Delhi,measured,0.055,74.4,60.8,44.6,36.4
+Noida → New Delhi,moderate,0.2,80.4,65.7,41.3,33.7
+Noida → New Delhi,heavy,0.5,96.1,78.5,34.5,28.2
+Dehradun → Mussoorie,measured,0.014,47.6,38.8,85.6,69.9
+Dehradun → Mussoorie,moderate,0.2,52.5,42.8,77.6,63.4
+Dehradun → Mussoorie,heavy,0.5,62.6,51.1,65.1,53.1
+Mussoorie → Dehradun,measured,0.004,95.0,77.6,36.5,29.8
+Mussoorie → Dehradun,moderate,0.2,107.6,87.8,32.3,26.3
+Mussoorie → Dehradun,heavy,0.5,132.8,108.5,26.1,21.3
+Shimla → Kufri,measured,0.0,48.9,40.0,33.5,27.3
+Shimla → Kufri,moderate,0.2,54.8,44.8,29.9,24.4
+Shimla → Kufri,heavy,0.5,66.4,54.2,24.7,20.2
+Kufri → Shimla,measured,0.0,72.5,59.2,22.6,18.5
+Kufri → Shimla,moderate,0.2,82.2,67.1,19.9,16.3
+Kufri → Shimla,heavy,0.5,101.5,82.8,16.2,13.2
+Siliguri → Darjeeling,measured,0.0,49.6,40.5,149.1,121.7
+Siliguri → Darjeeling,moderate,0.2,55.1,45.0,134.1,109.5
+Siliguri → Darjeeling,heavy,0.5,65.9,53.8,112.2,91.6
+Darjeeling → Siliguri,measured,0.0,87.1,71.2,83.2,68.0
+Darjeeling → Siliguri,moderate,0.2,98.2,80.2,73.9,60.3
+Darjeeling → Siliguri,heavy,0.5,119.9,97.9,60.5,49.4

@@ -1,0 +1,3 @@
+Variant,Max_speed_kmh,Mean_speed_kmh,Max_accel_ms2,Min_accel_ms2,Rows_accel_gt_limit,Rows_decel_lt_limit,P99_abs_accel,Braking_events
+Original (upgrade_trinity.py),53.63,22.79,11.361,-1.371,5,0,0.647,396
+Corrected (per-session reset),53.63,22.29,0.797,-1.112,0,0,0.459,354

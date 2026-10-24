@@ -1,0 +1,151 @@
+{
+  "sanity_synthetic_test_MAE_pct": 0.2034,
+  "exp6": {
+    "table": [
+      {
+        "Variant": "Keras (eager)",
+        "Size_KB": 385.7,
+        "Latency_median_ms": 124.501,
+        "Latency_p95_ms": 156.744,
+        "MAE_synthetic_test_pct": 0.203,
+        "MAE_real_zero_shot_pct": 7.369,
+        "Max_abs_diff_vs_Keras_pct": 0.0
+      },
+      {
+        "Variant": "Keras (tf.function graph)",
+        "Size_KB": 385.7,
+        "Latency_median_ms": 3.052,
+        "Latency_p95_ms": 3.907,
+        "MAE_synthetic_test_pct": 0.203,
+        "MAE_real_zero_shot_pct": 7.369,
+        "Max_abs_diff_vs_Keras_pct": 0.0
+      },
+      {
+        "Variant": "TFLite float32 (1 thread)",
+        "Size_KB": 145.5,
+        "Latency_median_ms": 0.414,
+        "Latency_p95_ms": 0.492,
+        "MAE_synthetic_test_pct": 0.203,
+        "MAE_real_zero_shot_pct": 7.369,
+        "Max_abs_diff_vs_Keras_pct": 0.0
+      },
+      {
+        "Variant": "TFLite dynamic_int8 (1 thread)",
+        "Size_KB": 67.6,
+        "Latency_median_ms": 0.405,
+        "Latency_p95_ms": 0.499,
+        "MAE_synthetic_test_pct": 0.199,
+        "MAE_real_zero_shot_pct": 7.391,
+        "Max_abs_diff_vs_Keras_pct": 0.124
+      }
+    ],
+    "notes": {
+      "full_int8": "conversion not supported for this LSTM (converter process exit code 3221225477)"
+    },
+    "params": 29857,
+    "hardware": "Intel i5-12500H laptop CPU, single-threaded TFLite interpreter"
+  },
+  "exp7": {
+    "method": "shap.GradientExplainer (expected gradients), shap 0.52.0",
+    "background": 200,
+    "explained_synthetic": 300,
+    "explained_real": 200,
+    "base_value_soc_pct": 29.36,
+    "completeness_mean_abs_err_pp": 2.254,
+    "summary": {
+      "synthetic": {
+        "mean_abs_shap_pp": {
+          "Voltage": 17.692,
+          "Current": 0.562,
+          "Temperature": 0.164
+        },
+        "share_pct": {
+          "Voltage": 96.1,
+          "Current": 3.1,
+          "Temperature": 0.9
+        },
+        "share_of_last_10_steps_pct": 64.6
+      },
+      "real": {
+        "mean_abs_shap_pp": {
+          "Voltage": 61.492,
+          "Current": 1.971,
+          "Temperature": 2.801
+        },
+        "share_pct": {
+          "Voltage": 92.8,
+          "Current": 3.0,
+          "Temperature": 4.2
+        },
+        "share_of_last_10_steps_pct": 71.1
+      }
+    }
+  },
+  "exp8": {
+    "setup": "6 clients (real stand-test sessions); leave-one-client-out; FedAvg 10 rounds \u00d7 1 local epoch(s), Adam 1e-4, sample-weighted averaging; centralized and local-only use 10 epochs; all start from the synthetic-pretrained Exp-1 model",
+    "weighted_mean_MAE_pct": {
+      "Zero_shot": 7.369,
+      "Local_only_mean": 2.267,
+      "Local_only_best": 1.262,
+      "Centralized": 1.378,
+      "FedAvg": 1.674
+    },
+    "per_client": [
+      {
+        "Held_out_client": "S1 Single-ECO",
+        "Zero_shot": 5.058,
+        "Local_only_mean": 1.941,
+        "Local_only_best": 0.676,
+        "Centralized": 0.667,
+        "FedAvg": 0.951
+      },
+      {
+        "Held_out_client": "S2 Single-SPORT",
+        "Zero_shot": 10.568,
+        "Local_only_mean": 1.816,
+        "Local_only_best": 1.003,
+        "Centralized": 1.626,
+        "FedAvg": 1.153
+      },
+      {
+        "Held_out_client": "S3 Series-ECO",
+        "Zero_shot": 5.531,
+        "Local_only_mean": 1.676,
+        "Local_only_best": 0.634,
+        "Centralized": 0.599,
+        "FedAvg": 0.51
+      },
+      {
+        "Held_out_client": "S4 Series-SPORT",
+        "Zero_shot": 8.01,
+        "Local_only_mean": 2.455,
+        "Local_only_best": 1.801,
+        "Centralized": 1.317,
+        "FedAvg": 1.795
+      },
+      {
+        "Held_out_client": "S5 Parallel-ECO",
+        "Zero_shot": 4.68,
+        "Local_only_mean": 1.402,
+        "Local_only_best": 0.744,
+        "Centralized": 0.617,
+        "FedAvg": 0.624
+      },
+      {
+        "Held_out_client": "S6 Parallel-SPORT",
+        "Zero_shot": 10.101,
+        "Local_only_mean": 4.238,
+        "Local_only_best": 2.684,
+        "Centralized": 3.341,
+        "FedAvg": 4.896
+      }
+    ],
+    "model_size_float32_KB": 116.6,
+    "traffic_per_round_5_clients_KB": 1166.3,
+    "traffic_total_KB": 11662.9,
+    "raw_data_upload_5_clients_KB": 21.7,
+    "raw_1Hz_telemetry_per_vehicle_per_day_KB": 1350.0,
+    "break_even": "one round (download + upload \u2248 2 \u00d7 model size) costs less than uploading raw 1 Hz V/I/T/SOC telemetry once a vehicle has logged > 4.1 h of data per round"
+  },
+  "runtime_s": 767.9
+}

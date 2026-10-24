@@ -1,0 +1,23 @@
+
+======================================================================
+iBMS BACKEND SERVER
+======================================================================
+
+[+] Server running on http://localhost:5055
+[+] Flask API: undefined
+[+] Google Maps: ✅ CONFIGURED
+
+Available endpoints:
+  GET  /health                    - Health check
+  GET  /api/status                - System status
+  POST /api/predict/soc           - LSTM SOC prediction
+  POST /api/predict/dte           - Distance to Empty
+  POST /api/route/distance        - Route distance
+  POST /api/route/geometry        - Route geometry (polyline)
+  POST /api/feasibility           - Route feasibility + AMSA decision
+  POST /api/intelligence/whisperer - Conversational fleet analytics
+  POST /api/intelligence/xai       - Explainability breakdown
+  POST /api/intelligence/federated - Federated learning snapshot
+  POST /api/intelligence/digital-twin - What-if projection
+
+

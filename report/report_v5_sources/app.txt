@@ -1,0 +1,107 @@
+=== APPENDICES
+## Appendix A: Codes
+H3: A.1 Repositories and experiment scripts
+The source code is maintained in two Git repositories and a set of experiment scripts:
+- Frontend (Next.js dashboard and serverless API routes): https://github.com/mrunaljadhor/iBMS_frontend
+- Backend (Express route-energy model and AMSA): https://github.com/mrunaljadhor/bms_backend
+- experiments/exp1_soc_lstm/run_exp1.py – leak-free LSTM, Coulomb counting, EKF and constant baselines on synthetic and field data
+- experiments/exp2_calce_lfp/ – CALCE benchmark (LSTM, EKF-1RC, Coulomb, constant), uncertainty quantification (run_exp10_uq.py) and federated learning on CALCE
+- experiments/exp3_amsa_routes/run_exp3.py – AMSA route study on eight route directions (calls the real backend)
+- experiments/exp4_dte_sensitivity/run_exp4.py – one-at-a-time sensitivity of the DTE
+- experiments/exp678_edge_shap_fl/run_exp678.py – TensorFlow Lite conversion, SHAP and federated learning on the field data
+- kinematics_validation/validate_kinematics.py – validation of the kinematic synthesis
+Listing A.1 is an excerpt of the AMSA decision in the backend.
+CODE: Listing A.1: Three-tier feasibility check and leg-wise AMSA loop (backend/server.js, condensed)
+function checkFeasibility(current_soc, route_distance_km, env = {}) {
+  const eco_dte = calculateDTE(current_soc, 'ECO', env);
+  const sport_dte = calculateDTE(current_soc, 'SPORT', env);
+  let status = 'SAFE';
+  if (route_distance_km > eco_dte) status = 'IMPOSSIBLE';
+  else if (route_distance_km > sport_dte) status = 'CRITICAL';
+  return { status, eco_dte, sport_dte,
+           safety_margin_eco: eco_dte - route_distance_km,
+           safety_margin_sport: sport_dte - route_distance_km };
+}
+
+// risk-aware AMSA: decide on the lower SOC bound
+const decision_soc = Math.max(0, Number(current_soc) - socMargin);
+
+for (let i = 0; i < legs.length; i++) {
+  const leg_dist = legs[i].distance.value / 1000;
+  const leg = checkFeasibility(simulated_soc, leg_dist, envParams);
+  if (leg.status === 'IMPOSSIBLE') {
+    overall_status = 'IMPOSSIBLE'; amsa_action = 'CHARGE_REQUIRED'; break;
+  } else if (leg.status === 'CRITICAL') {
+    overall_status = 'CRITICAL'; amsa_action = 'FORCE_ECO_MODE';
+  }
+  simulated_soc -= (leg_dist / leg.eco_dte) * simulated_soc;   // Eq. (4.8)
+  if (chargeAtStops && i < legs.length - 1) simulated_soc = 100;
+}
+ENDCODE
+## Appendix B: Datasheets
+This appendix summarizes the specifications of the hardware used in the project, as obtained from the vehicle, the development kit and the measurements.
+TABLE: Table B.1: Battery pack of the electric two-wheeler
+Parameter | Value | Source
+Chemistry | Lithium iron phosphate (LiFePO4) | Vehicle
+Nominal voltage | 63.5 V | Field data (mean under load)
+Voltage at full charge | 63.8 V | Field data
+Capacity | 30.9 Ah (pooled estimate 28.9 Ah) | Coulomb counting on the field data
+Energy | ≈ 1.96 kWh | 30.9 Ah × 63.5 V
+Rated range | ≈ 76 km ECO, ≈ 62 km SPORT | On-board range display at full charge
+Measured temperature during tests | 30–31 °C | Vehicle BMS
+Maximum discharge current during tests | 8.0 A | Vehicle BMS (stand test)
+
+## Appendix C: Extended Results
+H3: C.1 Federated learning on the field data
+Table C.1 lists the leave-one-client-out results of federated learning with the six stand-test sessions as clients. All methods start from the synthetic-pretrained model; FedAvg uses 10 rounds of one local epoch.
+TABLE: Table C.1: Federated learning on the field data (MAE, % SOC)
+Held-out client | Zero-shot | Local-only (mean) | Centralized | FedAvg
+S1 Single-ECO | 5.06 | 1.94 | 0.67 | 0.95
+S2 Single-SPORT | 10.57 | 1.82 | 1.63 | 1.15
+S3 Series-ECO | 5.53 | 1.68 | 0.60 | 0.51
+S4 Series-SPORT | 8.01 | 2.46 | 1.32 | 1.80
+S5 Parallel-ECO | 4.68 | 1.40 | 0.62 | 0.62
+S6 Parallel-SPORT | 10.10 | 4.24 | 3.34 | 4.90
+Weighted mean | 7.37 | 2.27 | 1.38 | 1.67
+
+The float32 model is 116.6 KB; ten rounds with five clients transfer 11.7 MB, against 21.7 KB for uploading the raw stand-test data. Federated learning would save bandwidth only when each vehicle logs more than about 4.1 hours of 1 Hz telemetry per round. On CALCE (14 cell × temperature clients), FedAvg reached 8.99 % MAE against 3.17 % for centralized and 16.39 % for local-only training, with 32–38 MB of model updates against about 3.1 MB of raw data.
+H3: C.2 Route-study repeatability
+The route study was run three times: on 16 October 2026 at 11:49 IST (reported in Chapter 5), on 18 October 2026 at 18:37 IST and on 21 October 2026 at 08:54 IST. On the hill routes the ECO range differed by at most 0.8 km and the SOC thresholds by at most 1 percentage point between runs, and Siliguri → Darjeeling remained infeasible from a full charge in every run.
+## Appendix D: Plagiarism Report
+The similarity report generated for this report is attached at the end of the report.
+## Appendix E: Proof of Outcomes (Journal/Conference paper, Patent)
+The work has been written up as a conference paper in the IEEE two-column format:
+- Title: iBMS: Explainable LSTM State Estimation and Terrain- and Traffic-Aware Supervisory Drive-Mode Control in Electric Two-Wheelers.
+- Authors: Mrunal Jadhor, Ojal Dhuri, Dr. Shweta Kukade and Dr. Saket Yeolekar, Department of Electrical and Electronics Engineering, Dr. Vishwanath Karad MIT World Peace University, Pune.
+- Content: 7 pages, 3 figures, 3 tables, 1 algorithm and 30 verified references.
+- Target venue: IEEE International Conference on Intelligent Transportation Systems (ITSC); back-up venues IEEE ITEC-India, IEEE VPPC and IEEE INDICON.
+The working system is publicly accessible at https://ibmsdashboard.vercel.app, with the backend at https://ibms-backend-k4rs.onrender.com.
+## Appendix F: Standards Used (IEEE/IEC/ISO/IPC)
+TABLE: Table F.1: Standards considered in the design
+Standard | Scope | Relevance to iBMS
+AIS-156 | Safety requirements for traction battery packs of L-category vehicles (India) | Pack safety limits and BMS functions
+IEC 62660-1 / -2 | Secondary lithium-ion cells for EV propulsion: performance testing; reliability and abuse testing | Cell test conditions such as capacity and drive-cycle discharge
+ISO 12405-4 | Test specification for lithium-ion traction battery packs and systems | Reference for pack-level testing in future work
+ISO 26262 | Functional safety of road vehicles | Required before ECO-Lock is actuated through the VCU
+UN 38.3 | Transport of lithium batteries | Handling and transport of cells and packs
+IEEE editorial style | Referencing and paper format | Paper and report references
+
+These standards were used as guidance for the design and the test procedures; no formal certification was carried out in this project.
+## Appendix G: Bill of Material
+TABLE: Table G.1: Bill of material
+Item | Quantity | Purpose
+Single-cell BMS algorithm development kit | 1 | Bench prototype (measurement and protection)
+Resistor load | 1 | Controlled discharge of the test cell
+Li-ion test cell | 1 | Bench tests
+Arduino board with USB cable | 1 | Data acquisition into MATLAB/Simulink
+Jumper wires | 1 set | Connections between kit and Arduino
+Laptop (Intel i5-12500H, 16 GB RAM) | 1 | Model training, experiments and development
+Electric two-wheeler with LiFePO4 pack and BMS app | 1 | Field data acquisition
+Cloud services (Vercel, Render, TomTom, OpenTopoData, Google Maps, Gemini) | – | Free tiers used for hosting and APIs
+
+## Appendix H: Safety Norms Followed
+- The vehicle was tested only on a stand with the rear wheel lifted and the vehicle secured; no rider was on the vehicle during the tests.
+- The pack temperature stayed between 30 and 31 °C, and no cell was charged or discharged outside the limits of its BMS.
+- Bench tests on the single cell used the protection logic of the development kit and a fixed resistor load.
+- API keys are stored in environment variables and are not committed to the code repositories.
+- The backend does not keep a database of trips; route requests are answered and not stored.

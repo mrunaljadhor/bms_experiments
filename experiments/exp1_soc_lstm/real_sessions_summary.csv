@@ -1,0 +1,7 @@
+Method,MAE,RMSE,MaxErr
+LSTM zero-shot (synthetic-trained),7.369,8.692,27.143
+LSTM fine-tuned (LOSO),1.243,1.871,8.331
+Coulomb counting (true SOC0),0.073,0.093,0.281
+Coulomb counting (SOC0 +2%),2.057,2.059,2.281
+EKF (true SOC0),2.421,2.812,6.533
+EKF (SOC0 +2%),2.422,2.813,6.533
