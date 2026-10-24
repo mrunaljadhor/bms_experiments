@@ -58,7 +58,7 @@ The complete iBMS project is organized into three specialized repositories:
 
 1. **[iBMS_frontend](https://github.com/mrunaljadhor/iBMS_frontend)**: Next.js responsive telemetry dashboard, live map visualization, and interactive intelligence suite.
 2. **[bms_backend](https://github.com/mrunaljadhor/bms_backend)**: Node.js/Express telematics server implementing real-time SRTM elevation querying, TomTom traffic integration, and the three-tier AMSA decision loop.
-3. **[iBMS_experiments](https://github.com/mrunaljadhor/iBMS_experiments)** *(This Repository)*: Offline experiments, training pipelines, empirical benchmarks, and validation suites.
+3. **[bms_experiments](https://github.com/mrunaljadhor/bms_experiments)** *(This Repository)*: Offline experiments, training pipelines, empirical benchmarks, and validation suites.
 
 ---
 
@@ -175,8 +175,8 @@ iBMS_experiments/
 Clone this repository and create a Python virtual environment:
 
 ```bash
-git clone https://github.com/mrunaljadhor/iBMS_experiments.git
-cd iBMS_experiments
+git clone https://github.com/mrunaljadhor/bms_experiments.git
+cd bms_experiments
 
 python -m venv venv
 # On Windows:
